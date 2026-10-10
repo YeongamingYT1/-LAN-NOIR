@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en" x-data="app()" :class="{ 'overflow-hidden': loginOpen }">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <title>ÉLAN NOIR — Luxury Fashion Branding Agency</title>
+
+  <!-- TailwindCSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Alpine JS -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            luxury: '#0F3D2E',
+            cyanlux: '#00F0FF',
+            darkbg: '#07120F',
+            darkpanel: '#0D1F1A',
+            muted: '#8FA39D'
+          },
+          fontFamily: {
+            serif: ['Cormorant Garamond', 'serif'],
+            sans: ['Inter', 'sans-serif']
+          },
+          boxShadow: {
+            cyan: '0 0 20px rgba(0,240,255,0.25)',
+            glow: '0 0 40px rgba(0,240,255,0.18)'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    * {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: #07120F;
+      overflow-x: hidden;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .glass {
+      background: rgba(255,255,255,0.04);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .luxury-grid {
+      background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    .hero-mask::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(
+          to right,
+          rgba(7,18,15,0.95),
+          rgba(7,18,15,0.6),
+          rgba(7,18,15,0.85)
+        );
+      z-index: 1;
+    }
+
+    .fade-up {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: all .8s ease;
+    }
+
+    .fade-up.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .magnetic {
+      transition: all .35s ease;
+    }
+
+    .magnetic:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 0 25px rgba(0,240,255,.25);
+    }
+
+    .drawer {
+      transition: transform .4s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .floating-group {
+      position: relative;
+    }
+
+    .floating-input {
+      width: 100%;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 14px;
+      padding: 18px 16px 10px;
+      color: white;
+      outline: none;
+      transition: .3s;
+    }
+
+    .floating-input:focus {
+      border-color: #00F0FF;
+      box-shadow: 0 0 15px rgba(0,240,255,0.2);
+    }
+
+    .floating-label {
+      position: absolute;
+      left: 16px;
+      top: 16px;
+      color: #8FA39D;
+      transition: .25s ease;
+      pointer-events: none;
+      background: #10211c;
+      padding: 0 6px;
+    }
+
+    .floating-input:focus + .floating-label,
+    .floating-input:not(:placeholder-shown) + .floating-label {
+      top: -10px;
+      font-size: 12px;
+      color: #00F0FF;
+    }
+
+    .portfolio-card:hover img {
+      transform: scale(1.08);
+    }
+
+    .portfolio-card img {
+      transition: 1s ease;
+    }
+
+    .cyan-border:hover {
+      border-color: #00F0FF;
+      box-shadow: 0 0 20px rgba(0,240,255,.18);
+    }
+
+    .dashboard-card {
+      background:
+      linear-gradient(
+        145deg,
+        rgba(255,255,255,0.04),
+        rgba(255,255,255,0.02)
+      );
+    }
+  </style>
+</head>
+
+<body class="text-white luxury-grid">
+
+  <!-- NAVBAR -->
+  <header class="fixed top-0 left-0 w-full z-40 border-b border-white/5 bg-black/25 backdrop-blur-xl">
+    <div class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-cyanlux/10 border border-cyanlux/20 flex items-center justify-center">
+          <i class="fa-solid fa-gem text-cyanlux"></i>
+        </div>
+
+        <div>
+          <h1 class="font-serif text-2xl tracking-wide">ÉLAN NOIR</h1>
+          <p class="text-xs text-muted uppercase tracking-[4px]">
+            Fashion Branding Agency
+          </p>
+        </div>
+      </div>
+
+      <nav class="hidden lg:flex items-center gap-10 text-sm">
+        <a href="#home" class="magnetic hover:text-cyanlux transition">Home</a>
+        <a href="#portfolio" class="magnetic hover:text-cyanlux transition">Portfolio</a>
+        <a href="#services" class="magnetic hover:text-cyanlux transition">Services</a>
+        <a href="#testimonials" class="magnetic hover:text-cyanlux transition">Clients</a>
+        <a href="#dashboard" class="magnetic hover:text-cyanlux transition">Dashboard</a>
+      </nav>
+
+      <button
+        @click="openLogin()"
+        class="magnetic px-6 py-3 rounded-full bg-luxury border border-cyanlux/30 hover:border-cyanlux transition-all duration-300 shadow-cyan text-sm font-medium">
+        Client Portal
+      </button>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section id="home"
+    class="relative min-h-screen flex items-center overflow-hidden hero-mask">
+
+    <img
+      src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?q=80&w=1600&auto=format&fit=crop"
+      class="absolute inset-0 w-full h-full object-cover scale-110"
+      alt="Fashion Hero"
+    >
+
+    <div class="absolute inset-0 bg-gradient-to-r from-black/90 via-black/40 to-black/80"></div>
+
+    <div class="relative z-10 max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
+
+      <div class="fade-up">
+        <p class="uppercase tracking-[6px] text-cyanlux text-sm mb-5">
+          Luxury Digital Branding
+        </p>
+
+        <h1 class="font-serif text-6xl lg:text-8xl leading-none mb-8">
+          Fashion
+          <span class="text-cyanlux">Identity</span>
+          For Modern
+          Luxury Brands
+        </h1>
+
+        <p class="text-muted text-lg leading-relaxed max-w-xl mb-10">
+          We craft iconic fashion identities, premium visual systems,
+          and elevated digital experiences for luxury brands seeking
+          distinction in the modern market.
+        </p>
+
+        <div class="flex flex-wrap gap-5">
+          <button class="magnetic px-8 py-4 bg-cyanlux text-black rounded-full font-semibold">
+            View Portfolio
+          </button>
+
+          <button class="magnetic px-8 py-4 border border-white/10 rounded-full hover:border-cyanlux">
+            Schedule Consultation
+          </button>
+        </div>
+      </div>
+
+      <div class="hidden lg:block fade-up">
+        <div class="glass rounded-[40px] p-10 shadow-glow">
+          <div class="grid grid-cols-2 gap-5">
+
+            <div class="h-56 rounded-3xl overflow-hidden">
+              <img
+                class="w-full h-full object-cover"
+                src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?q=80&w=900&auto=format&fit=crop"
+              >
+            </div>
+
+            <div class="h-80 rounded-3xl overflow-hidden mt-10">
+              <img
+                class="w-full h-full object-cover"
+                src="https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=900&auto=format&fit=crop"
+              >
+            </div>
+
+            <div class="h-80 rounded-3xl overflow-hidden -mt-16">
+              <img
+                class="w-full h-full object-cover"
+                src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=900&auto=format&fit=crop"
+              >
+            </div>
+
+            <div class="h-56 rounded-3xl overflow-hidden">
+              <img
+                class="w-full h-full object-cover"
+                src="https://images.unsplash.com/photo-1495385794356-15371f348c31?q=80&w=900&auto=format&fit=crop"
+              >
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PORTFOLIO -->
+  <section id="portfolio" class="py-28">
+    <div class="max-w-7xl mx-auto px-6">
+
+      <div class="flex flex-col lg:flex-row lg:items-end justify-between mb-16 gap-8 fade-up">
+
+        <div>
+          <p class="text-cyanlux uppercase tracking-[4px] mb-4">
+            Selected Work
+          </p>
+
+          <h2 class="font-serif text-5xl lg:text-6xl">
+            Luxury Fashion
+            Portfolio
+          </h2>
+        </div>
+
+        <p class="text-muted max-w-xl leading-relaxed">
+          Premium fashion campaigns, luxury rebranding systems,
+          editorial concepts, and digital experiences designed
+          for elite global clients.
+        </p>
+
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+        <!-- CARD -->
+        <div class="portfolio-card fade-up glass rounded-[30px] overflow-hidden cyan-border border border-white/5">
+          <div class="h-[420px] overflow-hidden">
+            <img
+              class="w-full h-full object-cover"
+              src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1200&auto=format&fit=crop">
+          </div>
+
+          <div class="p-7">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-serif text-3xl">Veloura</h3>
+              <span class="text-cyanlux text-sm">Brand Identity</span>
+            </div>
+
+            <p class="text-muted leading-relaxed">
+              Luxury womenswear visual identity with editorial campaign direction.
+            </p>
+          </div>
+        </div>
+
+        <div class="portfolio-card fade-up glass rounded-[30px] overflow-hidden cyan-border border border-white/5">
+          <div class="h-[420px] overflow-hidden">
+            <img
+              class="w-full h-full object-cover"
+              src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?q=80&w=1200&auto=format&fit=crop">
+          </div>
+
+          <div class="p-7">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-serif text-3xl">Maison Étoile</h3>
+              <span class="text-cyanlux text-sm">Campaign Design</span>
+            </div>
+
+            <p class="text-muted leading-relaxed">
+              High-fashion digital storytelling and luxury campaign assets.
+            </p>
+          </div>
+        </div>
+
+        <div class="portfolio-card fade-up glass rounded-[30px] overflow-hidden cyan-border border border-white/5">
+          <div class="h-[420px] overflow-hidden">
+            <img
+              class="w-full h-full object-cover"
+              src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?q=80&w=1200&auto=format&fit=crop">
+          </div>
+
+          <div class="p-7">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-serif text-3xl">Noir Atelier</h3>
+              <span class="text-cyanlux text-sm">Creative Direction</span>
+            </div>
+
+            <p class="text-muted leading-relaxed">
+              Sophisticated luxury branding ecosystem for premium menswear.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section id="services" class="py-28 bg-black/20">
+    <div class="max-w-7xl mx-auto px-6">
+
+      <div class="text-center mb-20 fade-up">
+        <p class="text-cyanlux uppercase tracking-[5px] mb-4">
+          What We Do
+        </p>
+
+        <h2 class="font-serif text-6xl mb-6">
+          Fashion Branding Services
+        </h2>
+
+        <p class="text-muted max-w-2xl mx-auto">
+          Designed for luxury labels, premium retail houses,
+          fashion startups, and elite creative agencies.
+        </p>
+      </div>
+
+      <div class="grid lg:grid-cols-3 gap-8">
+
+        <div class="dashboard-card border border-white/5 rounded-[28px] p-10 fade-up cyan-border">
+          <div class="w-16 h-16 rounded-2xl bg-cyanlux/10 flex items-center justify-center mb-8">
+            <i class="fa-solid fa-layer-group text-cyanlux text-2xl"></i>
+          </div>
+
+          <h3 class="font-serif text-4xl mb-5">
+            Brand Identity
+          </h3>
+
+          <p class="text-muted leading-relaxed">
+            Luxury logo systems, typography direction,
+            visual storytelling, and fashion-ready branding guidelines.
+          </p>
+        </div>
+
+        <div class="dashboard-card border border-white/5 rounded-[28px] p-10 fade-up cyan-border">
+          <div class="w-16 h-16 rounded-2xl bg-cyanlux/10 flex items-center justify-center mb-8">
+            <i class="fa-solid fa-camera-retro text-cyanlux text-2xl"></i>
+          </div>
+
+          <h3 class="font-serif text-4xl mb-5">
+            Campaign Creative
+          </h3>
+
+          <p class="text-muted leading-relaxed">
+            Editorial campaign concepts, social luxury visuals,
+            fashion launch direction, and digital storytelling.
+          </p>
+        </div>
+
+        <div class="dashboard-card border border-white/5 rounded-[28px] p-10 fade-up cyan-border">
+          <div class="w-16 h-16 rounded-2xl bg-cyanlux/10 flex items-center justify-center mb-8">
+            <i class="fa-solid fa-code text-cyanlux text-2xl"></i>
+          </div>
+
+          <h3 class="font-serif text-4xl mb-5">
+            Digital Experience
+          </h3>
+
+          <p class="text-muted leading-relaxed">
+            Premium websites, client portals, immersive UI systems,
+            and high-end digital brand ecosystems.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section id="testimonials" class="py-28">
+    <div class="max-w-7xl mx-auto px-6">
+
+      <div class="text-center mb-20 fade-up">
+        <p class="uppercase tracking-[5px] text-cyanlux mb-4">
+          Client Experience
+        </p>
+
+        <h2 class="font-serif text-6xl">
+          Trusted By Premium Fashion Brands
+        </h2>
+      </div>
+
+      <div class="grid lg:grid-cols-3 gap-8">
+
+        <div class="glass rounded-[28px] p-10 border border-white/5 fade-up">
+          <div class="flex gap-1 text-cyanlux mb-6">
+            <i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i>
+          </div>
+
+          <p class="text-muted leading-relaxed mb-8">
+            “ÉLAN NOIR elevated our visual identity into something truly global.
+            Their digital luxury direction transformed our brand presence.”
+          </p>
+
+          <div>
+            <h4 class="font-semibold">Sophia Laurent</h4>
+            <p class="text-sm text-cyanlux">Creative Director — Maison Étoile</p>
+          </div>
+        </div>
+
+        <div class="glass rounded-[28px] p-10 border border-white/5 fade-up">
+          <div class="flex gap-1 text-cyanlux mb-6">
+            <i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i>
+          </div>
+
+          <p class="text-muted leading-relaxed mb-8">
+            “The branding system feels editorial, premium, and digitally elite.
+            Our campaign performance increased significantly.”
+          </p>
+
+          <div>
+            <h4 class="font-semibold">Alexander Moreau</h4>
+            <p class="text-sm text-cyanlux">Founder — Noir Atelier</p>
+          </div>
+        </div>
+
+        <div class="glass rounded-[28px] p-10 border border-white/5 fade-up">
+          <div class="flex gap-1 text-cyanlux mb-6">
+            <i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i>
+          </div>
+
+          <p class="text-muted leading-relaxed mb-8">
+            “Luxury-grade execution from strategy to interface.
+            One of the best creative partnerships we've experienced.”
+          </p>
+
+          <div>
+            <h4 class="font-semibold">Emily Carter</h4>
+            <p class="text-sm text-cyanlux">CEO — Veloura</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- DASHBOARD -->
+  <section id="dashboard" class="py-28 bg-black/20">
+    <div class="max-w-7xl mx-auto px-6">
+
+      <div class="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-8 mb-16 fade-up">
+
+        <div>
+          <p class="uppercase tracking-[5px] text-cyanlux mb-4">
+            Protected Client Area
+          </p>
+
+          <h2 class="font-serif text-6xl">
+            Client Dashboard
+          </h2>
+        </div>
+
+        <button
+          @click="openLogin()"
+          class="magnetic px-7 py-4 rounded-full border border-cyanlux/40 bg-cyanlux/10 hover:bg-cyanlux hover:text-black transition">
+          Secure Access
+        </button>
+
+      </div>
+
+      <div class="grid lg:grid-cols-3 gap-8">
+
+        <div class="dashboard-card rounded-[28px] border border-white/5 p-8 fade-up">
+          <div class="flex items-center justify-between mb-8">
+            <h3 class="font-serif text-3xl">Active Projects</h3>
+            <i class="fa-solid fa-briefcase text-cyanlux"></i>
+          </div>
+
+          <div class="space-y-5">
+
+            <div class="bg-white/5 rounded-2xl p-5">
+              <div class="flex justify-between mb-2">
+                <span>Maison Étoile Rebrand</span>
+                <span class="text-cyanlux text-sm">82%</span>
+              </div>
+
+              <div class="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                <div class="h-full bg-cyanlux w-[82%]"></div>
+              </div>
+            </div>
+
+            <div class="bg-white/5 rounded-2xl p-5">
+              <div class="flex justify-between mb-2">
+                <span>Veloura Campaign</span>
+                <span class="text-cyanlux text-sm">64%</span>
+              </div>
+
+              <div class="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                <div class="h-full bg-cyanlux w-[64%]"></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="dashboard-card rounded-[28px] border border-white/5 p-8 fade-up">
+          <div class="flex items-center justify-between mb-8">
+            <h3 class="font-serif text-3xl">Brand Assets</h3>
+            <i class="fa-solid fa-download text-cyanlux"></i>
+          </div>
+
+          <div class="space-y-4">
+
+            <div class="flex items-center justify-between bg-white/5 p-5 rounded-2xl">
+              <div>
+                <h4>Brand Guidelines.pdf</h4>
+                <p class="text-sm text-muted">High Resolution</p>
+              </div>
+
+              <button class="text-cyanlux hover:scale-110 transition">
+                <i class="fa-solid fa-download"></i>
+              </button>
+            </div>
+
+            <div class="flex items-center justify-between bg-white/5 p-5 rounded-2xl">
+              <div>
+                <h4>Luxury Assets.zip</h4>
+                <p class="text-sm text-muted">Editable Sources</p>
+              </div>
+
+              <button class="text-cyanlux hover:scale-110 transition">
+                <i class="fa-solid fa-download"></i>
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="dashboard-card rounded-[28px] border border-white/5 p-8 fade-up">
+          <div class="flex items-center justify-between mb-8">
+            <h3 class="font-serif text-3xl">Client Support</h3>
+            <i class="fa-solid fa-headset text-cyanlux"></i>
+          </div>
+
+          <div class="space-y-5">
+
+            <div class="bg-white/5 p-5 rounded-2xl">
+              <p class="text-sm text-muted mb-2">
+                Assigned Creative Director
+              </p>
+
+              <h4 class="text-lg">Sophia Laurent</h4>
+            </div>
+
+            <div class="bg-white/5 p-5 rounded-2xl">
+              <p class="text-sm text-muted mb-2">
+                Next Review Session
+              </p>
+
+              <h4 class="text-lg">June 4 — 14:00 PM</h4>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="py-28">
+    <div class="max-w-5xl mx-auto px-6">
+      <div class="glass rounded-[40px] p-14 border border-cyanlux/20 shadow-glow text-center fade-up">
+
+        <p class="uppercase tracking-[5px] text-cyanlux mb-5">
+          Build Your Luxury Identity
+        </p>
+
+        <h2 class="font-serif text-6xl mb-8">
+          Create A Fashion Brand
+          That Commands Attention
+        </h2>
+
+        <p class="text-muted max-w-2xl mx-auto mb-10 leading-relaxed">
+          From visual identity to luxury digital experiences,
+          we design fashion ecosystems built for prestige,
+          recognition, and modern growth.
+        </p>
+
+        <button class="magnetic px-10 py-5 rounded-full bg-cyanlux text-black font-semibold">
+          Start Your Project
+        </button>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-white/5 py-10">
+    <div class="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center justify-between gap-6">
+
+      <div>
+        <h3 class="font-serif text-3xl">ÉLAN NOIR</h3>
+        <p class="text-muted text-sm">
+          Premium Fashion Branding Agency
+        </p>
+      </div>
+
+      <div class="flex items-center gap-5 text-lg">
+        <a href="#" class="hover:text-cyanlux transition">
+          <i class="fab fa-instagram"></i>
+        </a>
+
+        <a href="#" class="hover:text-cyanlux transition">
+          <i class="fab fa-dribbble"></i>
+        </a>
+
+        <a href="#" class="hover:text-cyanlux transition">
+          <i class="fab fa-linkedin"></i>
+        </a>
+
+        <a href="#" class="hover:text-cyanlux transition">
+          <i class="fab fa-behance"></i>
+        </a>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- LOGIN DRAWER -->
+  <div
+    x-show="loginOpen"
+    x-transition.opacity
+    class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm">
+
+    <!-- BACKDROP -->
+    <div
+      class="absolute inset-0"
+      @click="closeLogin()">
+    </div>
+
+    <!-- DRAWER -->
+    <div
+      class="drawer absolute right-0 top-0 h-full w-full sm:w-[480px] bg-[#0B1714] border-l border-cyanlux/20 shadow-2xl overflow-y-auto"
+      :class="loginOpen ? 'translate-x-0' : 'translate-x-full'">
+
+      <div class="p-8">
+
+        <!-- TOP -->
+        <div class="flex items-center justify-between mb-10">
+          <div>
+            <h2 class="font-serif text-5xl">
+              Client Portal
+            </h2>
+
+            <p class="text-muted mt-2">
+              Secure luxury workspace access.
+            </p>
+          </div>
+
+          <button
+            @click="closeLogin()"
+            class="w-12 h-12 rounded-full border border-white/10 hover:border-cyanlux transition flex items-center justify-center">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <!-- SOCIAL -->
+        <div class="space-y-4 mb-8">
+
+          <button class="w-full magnetic flex items-center justify-center gap-3 py-4 rounded-2xl border border-white/10 hover:border-cyanlux transition">
+            <i class="fab fa-google"></i>
+            Sign in with Google
+          </button>
+
+          <button class="w-full magnetic flex items-center justify-center gap-3 py-4 rounded-2xl border border-white/10 hover:border-cyanlux transition">
+            <i class="fab fa-apple"></i>
+            Sign in with Apple
+          </button>
+
+        </div>
+
+        <div class="flex items-center gap-4 mb-8">
+          <div class="flex-1 h-px bg-white/10"></div>
+          <span class="text-muted text-sm">OR</span>
+          <div class="flex-1 h-px bg-white/10"></div>
+        </div>
+
+        <!-- FORM -->
+        <form class="space-y-6">
+
+          <div class="floating-group">
+            <input
+              type="email"
+              placeholder=" "
+              class="floating-input"
+            >
+
+            <label class="floating-label">
+              Email Address
+            </label>
+          </div>
+
+          <div class="floating-group">
+            <input
+              type="password"
+              placeholder=" "
+              class="floating-input"
+            >
+
+            <label class="floating-label">
+              Password
+            </label>
+          </div>
+
+          <div class="flex items-center justify-between text-sm">
+
+            <label class="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                class="accent-cyanlux"
+                x-model="rememberMe">
+
+              <span class="text-muted">
+                Stay Logged In
+              </span>
+            </label>
+
+            <button
+              type="button"
+              class="text-cyanlux hover:underline">
+              Forgot Password?
+            </button>
+
+          </div>
+
+          <button
+            type="submit"
+            @click.prevent="login()"
+            class="w-full magnetic py-4 rounded-2xl bg-cyanlux text-black font-semibold shadow-cyan">
+            Secure Sign In
+          </button>
+
+        </form>
+
+        <!-- MAGIC LINK -->
+        <div class="mt-8 text-center">
+          <button class="text-cyanlux hover:underline">
+            Request Magic Login Link
+          </button>
+        </div>
+
+        <!-- SECURITY -->
+        <div class="mt-12 glass rounded-3xl p-6 border border-cyanlux/10">
+
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-cyanlux/10 flex items-center justify-center">
+              <i class="fa-solid fa-shield-halved text-cyanlux"></i>
+            </div>
+
+            <div>
+              <h4 class="font-semibold mb-2">
+                Enterprise Security
+              </h4>
+
+              <p class="text-sm text-muted leading-relaxed">
+                Persistent login sessions are securely simulated
+                using encrypted LocalStorage tokens and protected
+                authentication patterns for premium client workflows.
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPT -->
+  <script>
+    function app() {
+      return {
+        loginOpen: false,
+        rememberMe: false,
+
+        openLogin() {
+          this.loginOpen = true
+        },
+
+        closeLogin() {
+          this.loginOpen = false
+        },
+
+        login() {
+          const token = {
+            authenticated: true,
+            loginAt: new Date().toISOString()
+          }
+
+          if (this.rememberMe) {
+            localStorage.setItem(
+              'elan_noir_secure_auth',
+              JSON.stringify(token)
+            )
+          }
+
+          alert(
+            'Luxury client authentication successful.'
+          )
+
+          this.closeLogin()
+        }
+      }
+    }
+
+    // SCROLL ANIMATION
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if(entry.isIntersecting) {
+          entry.target.classList.add('show')
+        }
+      })
+    }, {
+      threshold: 0.12
+    })
+
+    document.querySelectorAll('.fade-up')
+      .forEach((el) => observer.observe(el))
+
+    // LOAD SESSION
+    window.addEventListener('load', () => {
+      const auth =
+        localStorage.getItem('elan_noir_secure_auth')
+
+      if(auth) {
+        console.log(
+          'Secure persistent session detected.'
+        )
+      }
+    })
+  </script>
+
+</body>
+</html>
